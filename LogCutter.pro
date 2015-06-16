@@ -20,7 +20,6 @@ SOURCES += main.cpp\
 HEADERS  += mainwindow.h \
     analyer/analyer.h \
     all.h \
-    analyer/msganalyser.h \
-    analyer/analyserall.h
+    analyer/msganalyser.h
 
 FORMS    += mainwindow.ui

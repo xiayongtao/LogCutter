@@ -10,6 +10,7 @@ MsgAnalyser::~MsgAnalyser()
 
 }
 
+
 const AnaylyseRetNode MsgAnalyser::DEBUG_NODE = {0,"解析过程调试信息"};
 
 QList<AnaylyseRetNode> MsgAnalyser::analyseMsg(Msg msg, Msg &remanentMsg)
