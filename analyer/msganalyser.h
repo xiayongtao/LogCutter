@@ -11,7 +11,7 @@ public:
     ~MsgAnalyser();
 
     //解析一条报文
-    virtual QList<AnaylyseRetNode> analyseMsg(Msg msg, Msg &remanentMsg);
+    virtual QList<AnaylyseRetNode> analyseMsg(Msg msg, Msg *remanentMsg);
 
     const static AnaylyseRetNode DEBUG_NODE;
 
