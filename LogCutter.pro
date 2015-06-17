@@ -15,11 +15,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     analyer/analyer.cpp \
-    analyer/msganalyser.cpp
+    analyer/msganalyser.cpp \
+    analyer/mloganalyser.cpp
 
 HEADERS  += mainwindow.h \
     analyer/analyer.h \
     all.h \
-    analyer/msganalyser.h
+    analyer/msganalyser.h \
+    analyer/mloganalyser.h
 
 FORMS    += mainwindow.ui

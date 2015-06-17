@@ -18,25 +18,23 @@ QString Analyer::analyserMsg(Msg msg)
     Msg         remanentMsg;
     Msg         inputMsg;
     QList<AnaylyseRetNode> anaRet;
-    QString     retStr;
+    QString     retStr = QString("");
 
     remanentMsg = msg;
-    do
+
+
+    while(remanentMsg.msgType == MSG_NONE)
     {
         inputMsg = remanentMsg;
+
+        //根据报文内容生成不通的解析类
         switch(inputMsg.msgType)
         {
-        case MSG_UNKNOW:
-
-            break;
-        case MSG_LOG:
-
-            break;
 
         default:
-            retStr = QString("");
             return retStr;
         }
+
         if(msganalyser != NULL)
         {
             delete msganalyser;
@@ -46,18 +44,16 @@ QString Analyer::analyserMsg(Msg msg)
 
         anaRet = msganalyser->analyseMsg(inputMsg,&remanentMsg);
 
+        //释放生成的解析类
+        delete msganalyser;
+        msganalyser = NULL;
+
+
         for(int i = 0; i < anaRet.length(); i++)
         {
             retStr.append(anaRet.at(i).nodeData);
         }
-    }while(remanentMsg.msgType == MSG_UNKNOW);
-
-    if(msganalyser != NULL)
-    {
-        delete msganalyser;
-        msganalyser = NULL;
     }
-
     return retStr;
 }
 
