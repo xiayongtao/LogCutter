@@ -16,12 +16,14 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     analyer/analyer.cpp \
     analyer/msganalyser.cpp \
-    analyer/mloganalyser.cpp
+    analyer/mloganalyser.cpp \
+    analyer/m3762analyser.cpp
 
 HEADERS  += mainwindow.h \
     analyer/analyer.h \
     all.h \
     analyer/msganalyser.h \
-    analyer/mloganalyser.h
+    analyer/mloganalyser.h \
+    analyer/m3762analyser.h
 
 FORMS    += mainwindow.ui

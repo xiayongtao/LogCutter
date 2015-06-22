@@ -1,17 +1,19 @@
 #include "analyer.h"
 #include "msganalyser.h"
+#include "mloganalyser.h"
+#include "m3762analyser.h"
 
-Analyer::Analyer()
+Analyser::Analyser()
 {
 
 }
 
-Analyer::~Analyer()
+Analyser::~Analyser()
 {
 
 }
 
-QString Analyer::analyserMsg(Msg msg)
+QString Analyser::analyserMsg(Msg msg)
 {
 
     MsgAnalyser *msganalyser = NULL;
@@ -23,36 +25,36 @@ QString Analyer::analyserMsg(Msg msg)
     remanentMsg = msg;
 
 
-    while(remanentMsg.msgType == MSG_NONE)
+    while(remanentMsg.msgType != MSG_NONE)
     {
         inputMsg = remanentMsg;
 
-        //根据报文内容生成不通的解析类
+        //根据报文内容生成不同的解析类
         switch(inputMsg.msgType)
         {
+        case MSG_LOG:
+            msganalyser = new MlogAnalyser();
+            break;
+        case MSG_3762:
+            msganalyser = new M3762Analyser();
+            break;
 
         default:
             return retStr;
         }
 
-        if(msganalyser != NULL)
-        {
-            delete msganalyser;
-            msganalyser = NULL;
-        }
-        msganalyser = new MsgAnalyser();
-
+        //解析报文
         anaRet = msganalyser->analyseMsg(inputMsg,&remanentMsg);
-
-        //释放生成的解析类
-        delete msganalyser;
-        msganalyser = NULL;
-
 
         for(int i = 0; i < anaRet.length(); i++)
         {
             retStr.append(anaRet.at(i).nodeData);
+            retStr.append(" ");
         }
+
+        //释放生成的解析类
+        delete msganalyser;
+        msganalyser = NULL;
     }
     return retStr;
 }

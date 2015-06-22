@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "analyer/analyer.h"
 
 namespace Ui {
 class MainWindow;
@@ -15,8 +16,14 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+private slots:
+    void getLogFilePath();
+    void startAnalyseLogFile();
+    void exportOutMsg();
+
 private:
     Ui::MainWindow *ui;
+    Analyser *loganalyser;
 };
 
 #endif // MAINWINDOW_H
