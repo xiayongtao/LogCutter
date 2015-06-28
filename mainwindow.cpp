@@ -39,7 +39,7 @@ void MainWindow::startAnalyseLogFile()
 
     while(logFile.readLine(buf, sizeof(buf)) != -1)
     {
-        ui->MsgOutput->append(loganalyser->analyserMsg({MSG_LOG,QString(buf)}));
+        //ui->MsgOutput->append(loganalyser->analyserMsg({MSG_LOG,QString(buf)}));
     }
     logFile.close();
 }

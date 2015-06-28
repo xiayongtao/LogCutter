@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>982</width>
+    <height>592</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -73,35 +73,33 @@
        </layout>
       </item>
       <item>
-       <widget class="QTextEdit" name="MsgOutput"/>
+       <widget class="AnalyseMsgSheet" name="tableWidget"/>
       </item>
      </layout>
     </item>
    </layout>
    <zorder></zorder>
-   <zorder>exportMsg</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>400</width>
+     <width>982</width>
      <height>23</height>
     </rect>
    </property>
   </widget>
-  <widget class="QToolBar" name="mainToolBar">
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-  </widget>
   <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>AnalyseMsgSheet</class>
+   <extends>QTableWidget</extends>
+   <header location="global">ui/analysemsgsheet.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
