@@ -11,11 +11,13 @@ public:
     MlogAnalyser();
     ~MlogAnalyser();
 
-    const static AnaylyseRetNode DATE_NODE;     //日期信息节点
-    const static AnaylyseRetNode TIME_NODE;     //时间信息节点
-    const static AnaylyseRetNode DIRECTION_NODE;//方向信息节点
+    static QList<MsgItem> getAllarn();
 
-    QList<AnaylyseRetNode> analyseMsg(Msg msg, Msg *remanentMsg);
+    const static MsgItem DATE_NODE;         //日期信息节点
+    const static MsgItem TIME_NODE;         //时间信息节点
+    const static MsgItem DIRECTION_NODE;    //方向信息节点
+
+    QList<MsgItem> analyseMsg(MsgItem msg, MsgItem *remanentMsg);
 
 
 private:

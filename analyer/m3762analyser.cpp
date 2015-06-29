@@ -10,15 +10,15 @@ M3762Analyser::~M3762Analyser()
 
 }
 
-const AnaylyseRetNode M3762Analyser::LENGTH_NODE = {M3762_ANALYSER_NODE_START+1,"376.2报文长度"};
-const AnaylyseRetNode M3762Analyser::CONTROL_NODE = {M3762_ANALYSER_NODE_START+2,"376.2控制码"};
-const AnaylyseRetNode M3762Analyser::INFO_NODE = {M3762_ANALYSER_NODE_START+3,"376.2信息域"};
-const AnaylyseRetNode M3762Analyser::SOUADDR_NODE = {M3762_ANALYSER_NODE_START+4,"376.2源地址"};
-const AnaylyseRetNode M3762Analyser::DESADDR_NODE = {M3762_ANALYSER_NODE_START+5,"376.2目的地址"};
-const AnaylyseRetNode M3762Analyser::AFN_NODE = {M3762_ANALYSER_NODE_START+6,"376.2应用功能码"};
-const AnaylyseRetNode M3762Analyser::Fn_NODE = {M3762_ANALYSER_NODE_START+7,"376.2信息类"};
-const AnaylyseRetNode M3762Analyser::DATA_NODE = {M3762_ANALYSER_NODE_START+2,"376.2数据域"};
-
+const MsgItem M3762Analyser::LENGTH_NODE(M3762_ANALYSER_NODE_START+1,"376.2报文长度");
+const MsgItem M3762Analyser::CONTROL_NODE(M3762_ANALYSER_NODE_START+2,"376.2控制码");
+const MsgItem M3762Analyser::INFO_NODE(M3762_ANALYSER_NODE_START+3,"376.2信息域");
+const MsgItem M3762Analyser::SOUADDR_NODE(M3762_ANALYSER_NODE_START+4,"376.2源地址");
+const MsgItem M3762Analyser::DESADDR_NODE(M3762_ANALYSER_NODE_START+5,"376.2目的地址");
+const MsgItem M3762Analyser::AFN_NODE(M3762_ANALYSER_NODE_START+6,"376.2应用功能码");
+const MsgItem M3762Analyser::Fn_NODE(M3762_ANALYSER_NODE_START+7,"376.2信息类");
+const MsgItem M3762Analyser::DATA_NODE(M3762_ANALYSER_NODE_START+8,"376.2数据域");
+const MsgItem M3762Analyser::METER_NODE(M3762_ANALYSER_NODE_START+9,"操作的电表地址");
 
 int M3762Analyser::checkMsg(QString msgData)
 {
@@ -51,16 +51,16 @@ int M3762Analyser::checkMsg(QString msgData)
 }
 
 
-QList<AnaylyseRetNode> M3762Analyser::analyseMsg(Msg msg, Msg *remanentMsg)
+QList<MsgItem> M3762Analyser::analyseMsg(MsgItem msg, MsgItem *remanentMsg)
 {
-    QList<AnaylyseRetNode> arnList;
-    AnaylyseRetNode arn;
+    QList<MsgItem> arnList;
+    MsgItem arn;
 
-    if(msg.msgType != MSG_3762)
+    if(msg.msgType != MsgItem::MSG_3762)
     {
-        arn.nodeType = DEBUG_NODE.nodeType;
-        arn.nodeData = QString("此报文不是376.2报文;");
-        remanentMsg->msgType = MSG_NONE;
+        arn.msgType = DEBUG_NODE.msgType;
+        arn.setData(QString("此报文不是376.2报文"));
+        remanentMsg->msgType = MsgItem::MSG_NONE;
         arnList.append(arn);
         return arnList;
     }
@@ -71,63 +71,81 @@ QList<AnaylyseRetNode> M3762Analyser::analyseMsg(Msg msg, Msg *remanentMsg)
     msgLength = checkMsg(msg.msgData);
     if(msgLength < 0)
     {
-        arn.nodeType = DEBUG_NODE.nodeType;
-        arn.nodeData = QString("此报文不符合376.2报文格式;");
-        remanentMsg->msgType = MSG_NONE;
+        arn.msgType = DEBUG_NODE.msgType;
+        arn.setData(QString("此报文不符合376.2报文格式"));
+        remanentMsg->msgType = MsgItem::MSG_NONE;
         arnList.append(arn);
         return arnList;
     }
 
-    arn.nodeType = LENGTH_NODE.nodeType;
-    arn.nodeData = QString("%1").arg(msgLength/2);
+    //报文长度
+    arn.msgType = LENGTH_NODE.msgType;
+    arn.setData(QString("%1").arg(msgLength/2),false);
     arnList.append(arn);
 
-    arn.nodeType = CONTROL_NODE.nodeType;
-    arn.nodeData = msg.msgData.mid(6,2);
+    //控制码
+    arn.msgType = CONTROL_NODE.msgType;
+    arn.setData(msg.msgData.mid(6,2));
     arnList.append(arn);
 
-    arn.nodeType = INFO_NODE.nodeType;
-    arn.nodeData = msg.msgData.mid(8,12);
+
+    //信息域
+    arn.msgType = INFO_NODE.msgType;
+    arn.setData(msg.msgData.mid(8,12));
     arnList.append(arn);
 
-    if((arn.nodeData.at(11).cell() & 0x04) != 0)
+    if((arn.toByteArray()[0] & 0x04) != 0)
     {
         //存在地址域
-        arn.nodeType = SOUADDR_NODE.nodeType;
-        arn.nodeData = overthrow(msg.msgData.mid(20,12));
+        arn.msgType = SOUADDR_NODE.msgType;
+        arn.setData(overthrow(msg.msgData.mid(20,12)));
         arnList.append(arn);
 
-        arn.nodeType = DESADDR_NODE.nodeType;
-        arn.nodeData = overthrow(msg.msgData.mid(32,12));
+        arn.msgType = DESADDR_NODE.msgType;
+        arn.setData(overthrow(msg.msgData.mid(32,12)));
         arnList.append(arn);
         AFNpos = 44;
     }
     else
     {
-        arn.nodeType = SOUADDR_NODE.nodeType;
-        arn.nodeData = QString("");
+        arn.msgType = SOUADDR_NODE.msgType;
+        arn.setData(QString(""));
         arnList.append(arn);
 
-        arn.nodeType = DESADDR_NODE.nodeType;
-        arn.nodeData = QString("");
+        arn.msgType = DESADDR_NODE.msgType;
+        arn.setData(QString(""));
         arnList.append(arn);
         AFNpos = 20;
     }
 
-    arn.nodeType = AFN_NODE.nodeType;
-    arn.nodeData = msg.msgData.mid(AFNpos,2);
+    arn.msgType = AFN_NODE.msgType;
+    arn.setData(msg.msgData.mid(AFNpos,2));
     arnList.append(arn);
 
-    arn.nodeType = Fn_NODE.nodeType;
-    arn.nodeData = msg.msgData.mid(AFNpos+2,4);
+    arn.msgType = Fn_NODE.msgType;
+    arn.setData(msg.msgData.mid(AFNpos+2,4));
     arnList.append(arn);
 
-    arn.nodeType = DATA_NODE.nodeType;
-    arn.nodeData = msg.msgData.mid(AFNpos+6,msgLength-AFNpos-10);
+    arn.msgType = DATA_NODE.msgType;
+    arn.setData(msg.msgData.mid(AFNpos+6,msgLength-AFNpos-10));
     arnList.append(arn);
 
-    remanentMsg->msgType = MSG_NONE;
+    remanentMsg->msgType = MsgItem::MSG_NONE;
 
     return arnList;
 }
 
+QList<MsgItem> M3762Analyser::getAllarn()
+{
+    QList<MsgItem> arnList;
+    arnList.append(LENGTH_NODE);
+    arnList.append(CONTROL_NODE);
+    arnList.append(INFO_NODE);
+    arnList.append(SOUADDR_NODE);
+    arnList.append(DESADDR_NODE);
+    arnList.append(AFN_NODE);
+    arnList.append(Fn_NODE);
+    arnList.append(DATA_NODE);
+    arnList.append(METER_NODE);
+    return arnList;
+}

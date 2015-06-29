@@ -22,20 +22,20 @@ MlogAnalyser::~MlogAnalyser()
 
 }
 
-const AnaylyseRetNode MlogAnalyser::DATE_NODE      = {MLOG_ANALYSER_NODE_START,    "报文日期"};
-const AnaylyseRetNode MlogAnalyser::TIME_NODE      = {MLOG_ANALYSER_NODE_START+1,  "报文时间"};
-const AnaylyseRetNode MlogAnalyser::DIRECTION_NODE = {MLOG_ANALYSER_NODE_START+2,  "报文方向"};
+const MsgItem MlogAnalyser::DATE_NODE(MLOG_ANALYSER_NODE_START, QString("报文日期"));
+const MsgItem MlogAnalyser::TIME_NODE(MLOG_ANALYSER_NODE_START+1, QString("报文时间"));
+const MsgItem MlogAnalyser::DIRECTION_NODE(MLOG_ANALYSER_NODE_START+2, QString("报文方向"));
 
-QList<AnaylyseRetNode> MlogAnalyser::analyseMsg(Msg msg, Msg *remanentMsg)
+QList<MsgItem> MlogAnalyser::analyseMsg(MsgItem msg, MsgItem *remanentMsg)
 {
-    QList<AnaylyseRetNode> arnList;
-    AnaylyseRetNode arn;
+    QList<MsgItem>   arnList;
+    MsgItem          arn;
 
-    if(msg.msgType != MSG_LOG)
+    if(msg.msgType != MsgItem::MSG_LOG)
     {
-        arn.nodeType = DEBUG_NODE.nodeType;
-        arn.nodeData = QString("此报文不是日志报文;");
-        remanentMsg->msgType = MSG_NONE;
+        arn.msgType = DEBUG_NODE.msgType;
+        arn.setData(QString("此报文不是日志报文;"));
+        remanentMsg->msgType = MsgItem::MSG_NONE;
         arnList.append(arn);
         return arnList;
     }
@@ -55,15 +55,15 @@ QList<AnaylyseRetNode> MlogAnalyser::analyseMsg(Msg msg, Msg *remanentMsg)
     }
     if(i >= dateReg.length())
     {
-        arn.nodeType = DATE_NODE.nodeType;
-        arn.nodeData = QString("");
+        arn.msgType = DATE_NODE.msgType;
+        arn.setData(QString(""));
         arnList.append(arn);
     }
     else
     {
-        arn.nodeType = DATE_NODE.nodeType;
+        arn.msgType = DATE_NODE.msgType;
         if(i == 0)
-            arn.nodeData = regExp.cap(1) + "/" + regExp.cap(2);
+            arn.setData(regExp.cap(1) + "/" + regExp.cap(2),false);
         arnList.append(arn);
     }
 
@@ -77,15 +77,15 @@ QList<AnaylyseRetNode> MlogAnalyser::analyseMsg(Msg msg, Msg *remanentMsg)
     }
     if(i >= timeReg.length())
     {
-        arn.nodeType = TIME_NODE.nodeType;
-        arn.nodeData = QString("");
+        arn.msgType = TIME_NODE.msgType;
+        arn.setData(QString(""));
         arnList.append(arn);
     }
     else
     {
-        arn.nodeType = TIME_NODE.nodeType;
+        arn.msgType = TIME_NODE.msgType;
         if(i == 0)
-            arn.nodeData = regExp.cap(0);
+            arn.setData(regExp.cap(0),false);
         arnList.append(arn);
     }
 
@@ -99,20 +99,20 @@ QList<AnaylyseRetNode> MlogAnalyser::analyseMsg(Msg msg, Msg *remanentMsg)
     }
     if(i >= directionReg.length())
     {
-        arn.nodeType = DIRECTION_NODE.nodeType;
-        arn.nodeData = QString("");
+        arn.msgType = DIRECTION_NODE.msgType;
+        arn.setData(QString(""));
         arnList.append(arn);
     }
     else
     {
-        arn.nodeType = DIRECTION_NODE.nodeType;
+        arn.msgType = DIRECTION_NODE.msgType;
         if(i >= 0 && i <= 1)
-            arn.nodeData = regExp.cap(0);
+            arn.setData(regExp.cap(0));
         arnList.append(arn);
     }
 
     //识别报文中包含的规约帧
-    remanentMsg->msgType = MSG_NONE;
+    remanentMsg->msgType = MsgItem::MSG_NONE;
     regExp.setPattern("68");
     int remanentMsgLength = 0;
     while((pos = regExp.indexIn(msg.msgData,pos)) != -1)
@@ -120,11 +120,21 @@ QList<AnaylyseRetNode> MlogAnalyser::analyseMsg(Msg msg, Msg *remanentMsg)
         remanentMsgLength = M3762Analyser::checkMsg(msg.msgData.mid(pos,msg.msgData.length()-pos));
         if(remanentMsgLength > 0)
         {
-            remanentMsg->msgType = MSG_3762;
+            remanentMsg->msgType = MsgItem::MSG_3762;
             remanentMsg->msgData = msg.msgData.mid(pos,remanentMsgLength);
+            break;
         }
         pos += regExp.matchedLength();
     }
 
+    return arnList;
+}
+
+QList<MsgItem> MlogAnalyser::getAllarn()
+{
+    QList<MsgItem> arnList;
+    arnList.append(DATE_NODE);
+    arnList.append(TIME_NODE);
+    arnList.append(DIRECTION_NODE);
     return arnList;
 }

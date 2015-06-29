@@ -23,7 +23,6 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    Analyser *loganalyser;
 };
 
 #endif // MAINWINDOW_H

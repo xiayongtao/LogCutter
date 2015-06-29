@@ -8,7 +8,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    loganalyser = new Analyser();
 
     connect(ui->getPath,SIGNAL(clicked()),this,SLOT(getLogFilePath()));
     connect(ui->startAnalyse,SIGNAL(clicked()),this,SLOT(startAnalyseLogFile()));
@@ -17,7 +16,6 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
-    delete loganalyser;
 }
 
 
@@ -29,19 +27,15 @@ void MainWindow::getLogFilePath()
 
 void MainWindow::startAnalyseLogFile()
 {
-    QFile logFile(ui->logFilePath->text());
-    char  buf[1024];
+    Analyser loganalyser;
+    QList<QString> analyseRet;
 
-    if(!logFile.open(QFile::ReadOnly))
-    {
-        return;
-    }
+    loganalyser.analyserFile(ui->logFilePath->text(),&analyseRet);
 
-    while(logFile.readLine(buf, sizeof(buf)) != -1)
+    foreach(QString str,analyseRet)
     {
-        ui->MsgOutput->append(loganalyser->analyserMsg({MSG_LOG,QString(buf)}));
+        ui->MsgOutput->append(str);
     }
-    logFile.close();
 }
 
 void MainWindow::exportOutMsg()

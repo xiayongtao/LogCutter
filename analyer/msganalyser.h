@@ -10,28 +10,24 @@
 #define MLOG_ANALYSER_NODE_START        1000   //日志解析类节点类型开始值
 #define M3762_ANALYSER_NODE_START       3000   //376.2解析类节点类型开始值
 
-typedef struct
-{
-    int         nodeType;  //节点类型
-    QString     nodeData;  //节点内容
-
-} AnaylyseRetNode;         //解析结果节点
-
-
 class MsgAnalyser
 {
 public:
     MsgAnalyser();
     virtual ~MsgAnalyser();
 
-    const static AnaylyseRetNode DEBUG_NODE;     //调试信息节点
+    const static MsgItem DEBUG_NODE;     //调试信息节点
 
+    //获取所有的解析信息节点
+    static QList<MsgItem> getAllarn();
 
     //解析一条报文
-    virtual QList<AnaylyseRetNode> analyseMsg(Msg msg, Msg *remanentMsg);
+    virtual QList<MsgItem> analyseMsg(MsgItem msg, MsgItem *remanentMsg);
+
 
 
     QString overthrow(QString str, int offset = 0, int strlength = 0);
+    bool findDatafromList(QList<MsgItem> arnList, MsgItem *arNode);
 
 };
 

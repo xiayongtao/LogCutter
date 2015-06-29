@@ -11,30 +11,39 @@ MsgAnalyser::~MsgAnalyser()
 }
 
 
-const AnaylyseRetNode MsgAnalyser::DEBUG_NODE = {MSG_ANALYSER_NODE_START,"解析过程调试信息"};
+const MsgItem MsgAnalyser::DEBUG_NODE(MSG_ANALYSER_NODE_START,QString("解析过程调试信息"));
 
-QList<AnaylyseRetNode> MsgAnalyser::analyseMsg(Msg msg, Msg *remanentMsg)
+QList<MsgItem> MsgAnalyser::analyseMsg(MsgItem msg, MsgItem *remanentMsg)
 {
 
-    QList<AnaylyseRetNode> arnList;
-    AnaylyseRetNode arn;
+    QList<MsgItem>  arnList;
+    MsgItem         arn;
 
-    if(msg.msgType == MSG_NONE)
+    if(msg.msgType == MsgItem::MSG_NONE)
     {
-        arn.nodeType = DEBUG_NODE.nodeType;
-        arn.nodeData = QString("报文类型为没有报文;");
+        arn.msgType = DEBUG_NODE.msgType;
+        arn.setData(QString("报文类型为没有报文"));
     }
     else
     {
-        arn.nodeType = DEBUG_NODE.nodeType;
-        arn.nodeData = QString("基类不能解析任何报文;");
+        arn.msgType = DEBUG_NODE.msgType;
+        arn.setData(QString("基类不能解析任何报文"));
     }
 
     arnList.append(arn);
-    remanentMsg->msgType = MSG_NONE;
+    remanentMsg->msgType = MsgItem::MSG_NONE;
 
     return arnList;
 }
+
+
+QList<MsgItem> MsgAnalyser::getAllarn()
+{
+    QList<MsgItem> arnList;
+    arnList.append(DEBUG_NODE);
+    return arnList;
+}
+
 
 QString MsgAnalyser::overthrow(QString str, int offset, int strlength)
 {
@@ -50,5 +59,19 @@ QString MsgAnalyser::overthrow(QString str, int offset, int strlength)
         reStr.insert(0,str.mid(i,2));
     }
     return reStr;
+}
+
+bool MsgAnalyser::findDatafromList(QList<MsgItem> arnList, MsgItem *arNode)
+{
+    MsgItem arn;
+    foreach (arn, arnList)
+    {
+        if(arn.msgType == arNode->msgType)
+        {
+            arNode->msgData = arn.msgData;
+            return true;
+        }
+    }
+    return false;
 }
 
