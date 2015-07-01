@@ -30,8 +30,14 @@ void MainWindow::connectUi()
 void MainWindow::openFile()
 {
     QString filepath = QFileDialog::getOpenFileName(this, QString("打开"),QString("*.log; *.sub"));
+
+    Analyser loganalyser;
+    loganalyser.analyserFile(filepath, ui->analyseSheet);
+
+    /*
     QFile   logFile(filepath);
     char    buf[2048];
+
 
     if(!logFile.open(QFile::ReadOnly))
     {
@@ -47,6 +53,7 @@ void MainWindow::openFile()
         ui->analyseSheet->insertRow(crow);
         ui->analyseSheet->setItem(crow,0,new QTableWidgetItem(QString(buf)));
     }
+    */
 }
 
 

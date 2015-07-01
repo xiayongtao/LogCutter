@@ -181,11 +181,11 @@ int Analyser::analyserFile(QString filePath, AnalyseMsgSheet *analyseRet)
                 }
                 msgAnaRetTitle.append(msgAnaRetTitleItem);
                 analyseRet->insertColumn(curCol);
+                analyseRet->setItem(0, curCol, new QTableWidgetItem(msgAnaRetTitleItem.msgData));
                 analyseRet->setItem(curRow, curCol, new QTableWidgetItem(msgAnaRetItem.msgData));
             }
         }
     }
-
     logFile.close();
     return 0;
 }
