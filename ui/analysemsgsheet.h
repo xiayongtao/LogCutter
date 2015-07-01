@@ -11,6 +11,8 @@ public:
     AnalyseMsgSheet(QWidget *parent = 0);
     ~AnalyseMsgSheet();
 
+    void clean();
+
 
 
 

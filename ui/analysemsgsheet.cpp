@@ -15,3 +15,10 @@ AnalyseMsgSheet::~AnalyseMsgSheet()
 
 }
 
+
+void AnalyseMsgSheet::clean()
+{
+    setRowCount(0);
+    setColumnCount(0);
+}
+
