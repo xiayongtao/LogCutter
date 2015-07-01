@@ -155,7 +155,7 @@ void MsgItem::setData(QString msgData, bool isText)
 
 QByteArray MsgItem::toByteArray(int base)
 {
-    QString     realmsgData;
+    QString     realmsgData = msgData;
     QByteArray  bytearray;
     bool        ok;
 

@@ -55,6 +55,7 @@ QList<MsgItem> M3762Analyser::analyseMsg(MsgItem msg, MsgItem *remanentMsg)
 {
     QList<MsgItem> arnList;
     MsgItem arn;
+    bool ok;
 
     if(msg.msgType != MsgItem::MSG_3762)
     {
@@ -87,7 +88,12 @@ QList<MsgItem> M3762Analyser::analyseMsg(MsgItem msg, MsgItem *remanentMsg)
     arn.msgType = CONTROL_NODE.msgType;
     arn.setData(msg.msgData.mid(6,2));
     arnList.append(arn);
-
+    bool msgDir;
+    QByteArray tmp = arn.toByteArray();
+    if((arn.toByteArray().at(0) & 0x80) == 0)
+        msgDir = false;    //下行
+    else
+        msgDir = true;     //上行
 
     //信息域
     arn.msgType = INFO_NODE.msgType;
@@ -121,14 +127,25 @@ QList<MsgItem> M3762Analyser::analyseMsg(MsgItem msg, MsgItem *remanentMsg)
     arn.msgType = AFN_NODE.msgType;
     arn.setData(msg.msgData.mid(AFNpos,2));
     arnList.append(arn);
+    int AFN = arn.msgData.toInt(&ok,16);
 
     arn.msgType = Fn_NODE.msgType;
     arn.setData(msg.msgData.mid(AFNpos+2,4));
     arnList.append(arn);
+    QString Fn = msg.msgData.mid(AFNpos+2,4);
+
 
     arn.msgType = DATA_NODE.msgType;
     arn.setData(msg.msgData.mid(AFNpos+6,msgLength-AFNpos-10));
     arnList.append(arn);
+
+    if(msgDir && AFN == 0x14 && Fn == "0100")
+    {
+        MsgItem arnTemp = arn;
+        arn.msgType = METER_NODE.msgType;
+        arn.setData(overthrow(arnTemp.msgData.mid(2,12)));
+        arnList.append(arn);
+    }
 
     remanentMsg->msgType = MsgItem::MSG_NONE;
 

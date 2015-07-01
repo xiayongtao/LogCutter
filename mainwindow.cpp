@@ -35,6 +35,7 @@ void MainWindow::startAnalyseLogFile()
     foreach(QString str,analyseRet)
     {
         ui->MsgOutput->append(str);
+        ui->MsgOutput->update();
     }
 }
 
