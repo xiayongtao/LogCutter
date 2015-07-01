@@ -2,6 +2,8 @@
 #define ANALYER_H
 
 #include "all.h"
+#include "QTableWidget"
+#include "ui/analysemsgsheet.h"
 
 class MsgItem;
 
@@ -16,6 +18,12 @@ public:
     QList<MsgItem> analyserMsg(MsgItem msg);
     //解析一个文件
     int analyserFile(QString filePath, QList<QString> *analyseRet);
+    //解析一个文件
+    int analyserFile(QString filePath, AnalyseMsgSheet *analyseRet);
+
+
+private:
+    void getAllNode(QList<MsgItem> *allNode);
 
 };
 

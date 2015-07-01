@@ -56,11 +56,18 @@ QList<MsgItem> Analyser::analyserMsg(MsgItem msg)
     return retList;
 }
 
+void Analyser::getAllNode(QList<MsgItem> *allNode)
+{
+    allNode->append(MsgAnalyser::getAllarn());
+    allNode->append(MlogAnalyser::getAllarn());
+    allNode->append(M3762Analyser::getAllarn());
+}
+
 
 int Analyser::analyserFile(QString filePath, QList<QString> *analyseRet)
 {
     QFile               logFile(filePath);
-    char                buf[1024];
+    char                buf[2048];
     QList<MsgItem>      msgAnaRet;
     bool                first = true;
     QString             msgAnaRetStr;
@@ -117,7 +124,71 @@ int Analyser::analyserFile(QString filePath, QList<QString> *analyseRet)
     return 0;
 }
 
+int Analyser::analyserFile(QString filePath, AnalyseMsgSheet *analyseRet)
+{
+    QFile               logFile(filePath);
+    char                buf[2048];
 
+    QList<MsgItem>      allNode;         //所有可以解析的节点
+    QList<MsgItem>      msgAnaRet;       //解析结果
+    QList<MsgItem>      msgAnaRetTitle;  //记录的解析节点类型
+
+    MsgItem             allNodeItem;
+    MsgItem             msgAnaRetItem;
+    MsgItem             msgAnaRetTitleItem;
+
+    int                 curCol;
+    int                 curRow;
+
+
+    if(!logFile.open(QFile::ReadOnly))
+    {
+        return -1;
+    }
+
+    analyseRet->clean();
+    analyseRet->setRowCount(1);
+    getAllNode(&allNode);
+
+    while(logFile.readLine(buf, sizeof(buf)) != -1)
+    {
+        msgAnaRet = analyserMsg(MsgItem(MsgItem::MSG_LOG,QString(buf)));
+
+        curRow = analyseRet->rowCount();
+        analyseRet->insertRow(curRow);
+
+        foreach(msgAnaRetItem, msgAnaRet)
+        {
+            //遍历所有的记录的解析节点类型
+            for(curCol = 0; curCol < msgAnaRetTitle.length(); curCol++)
+            {
+                msgAnaRetTitleItem = msgAnaRetTitle.at(curCol);
+                if(msgAnaRetItem.msgType == msgAnaRetTitleItem.msgType)
+                {
+                    analyseRet->setItem(curRow, curCol, new QTableWidgetItem(msgAnaRetItem.msgData));
+                    break;
+                }
+            }
+            if(curCol >= msgAnaRetTitle.length())
+            {
+                //没有在记录中找到,添加一列
+                msgAnaRetTitleItem.msgType = msgAnaRetItem.msgType;
+                msgAnaRetTitleItem.msgData = QString("");
+                foreach(allNodeItem, allNode)
+                {
+                    if(allNodeItem.msgType == msgAnaRetItem.msgType)
+                        msgAnaRetTitleItem = allNodeItem;
+                }
+                msgAnaRetTitle.append(msgAnaRetTitleItem);
+                analyseRet->insertColumn(curCol);
+                analyseRet->setItem(curRow, curCol, new QTableWidgetItem(msgAnaRetItem.msgData));
+            }
+        }
+    }
+
+    logFile.close();
+    return 0;
+}
 
 
 
