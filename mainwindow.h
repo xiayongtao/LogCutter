@@ -17,12 +17,16 @@ public:
     ~MainWindow();
 
 private slots:
-    void getLogFilePath();
-    void startAnalyseLogFile();
-    void exportOutMsg();
+
+    void openFile();
 
 private:
     Ui::MainWindow *ui;
+
+    void connectUi();
+
+
+
 };
 
 #endif // MAINWINDOW_H

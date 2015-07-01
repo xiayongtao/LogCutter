@@ -9,8 +9,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    connect(ui->getPath,SIGNAL(clicked()),this,SLOT(getLogFilePath()));
-    connect(ui->startAnalyse,SIGNAL(clicked()),this,SLOT(startAnalyseLogFile()));
+    connectUi();
+
 }
 
 MainWindow::~MainWindow()
@@ -19,34 +19,35 @@ MainWindow::~MainWindow()
 }
 
 
-void MainWindow::getLogFilePath()
+
+//连接主界面中的信号和槽
+void MainWindow::connectUi()
 {
-    QString filepath = QFileDialog::getOpenFileName(this, tr("Open File"),tr("*.log; *.sub"));
-    ui->logFilePath->setText(filepath);
+    connect(ui->actionOpen,SIGNAL(triggered(bool)),this,SLOT(openFile()));
 }
 
-void MainWindow::startAnalyseLogFile()
+
+void MainWindow::openFile()
 {
-    Analyser loganalyser;
-    QList<QString> analyseRet;
+    QString filepath = QFileDialog::getOpenFileName(this, QString("打开"),QString("*.log; *.sub"));
+    QFile   logFile(filepath);
+    char    buf[2048];
 
-    loganalyser.analyserFile(ui->logFilePath->text(),&analyseRet);
-
-    foreach(QString str,analyseRet)
+    if(!logFile.open(QFile::ReadOnly))
     {
-        ui->MsgOutput->append(str);
-        ui->MsgOutput->update();
+
+    }
+
+    ui->analyseSheet->clean();
+    ui->analyseSheet->setColumnCount(1);
+
+    while(logFile.readLine(buf, sizeof(buf)) != -1)
+    {
+        int crow = ui->analyseSheet->rowCount();
+        ui->analyseSheet->insertRow(crow);
+        ui->analyseSheet->setItem(crow,0,new QTableWidgetItem(QString(buf)));
     }
 }
 
-void MainWindow::exportOutMsg()
-{
-    QString filepath = QFileDialog::getOpenFileName(this, tr("Open File"));
-    QFile exportFile(filepath);
-    if(!exportFile.open(QFile::ReadOnly))
-    {
-        return;
-    }
-    exportFile.close();
 
-}
+
