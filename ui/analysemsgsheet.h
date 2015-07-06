@@ -13,7 +13,9 @@ public:
 
     void clean();
 
-    int exportToExcel(QString &fileName);
+    int exportToExcel(QString fileName);
+
+    int exportToCsv(QString fileName);
 
 
 

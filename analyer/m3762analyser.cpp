@@ -1,4 +1,5 @@
 #include "m3762analyser.h"
+#include <QTextCodec>
 
 M3762Analyser::M3762Analyser()
 {
@@ -10,7 +11,7 @@ M3762Analyser::~M3762Analyser()
 
 }
 
-const MsgItem M3762Analyser::LENGTH_NODE(M3762_ANALYSER_NODE_START+1,"376.2报文长度");
+const MsgItem M3762Analyser::LENGTH_NODE(M3762_ANALYSER_NODE_START+1,QTextCodec::codecForName("UTF-8")->toUnicode("376.2报文长度"));
 const MsgItem M3762Analyser::CONTROL_NODE(M3762_ANALYSER_NODE_START+2,"376.2控制码");
 const MsgItem M3762Analyser::INFO_NODE(M3762_ANALYSER_NODE_START+3,"376.2信息域");
 const MsgItem M3762Analyser::SOUADDR_NODE(M3762_ANALYSER_NODE_START+4,"376.2源地址");

@@ -3,6 +3,7 @@
 
 #include "all.h"
 #include "analyer.h"
+#include "QTextCodec"
 
 #define MSG_ANALYSER_NODE_MAX_NUM       1000   //报文解析类以及其子类节点最大个数
 
@@ -28,6 +29,8 @@ public:
 
     QString overthrow(QString str, int offset = 0, int strlength = 0);
     bool findDatafromList(QList<MsgItem> arnList, MsgItem *arNode);
+
+    QTextCodec *codec;
 
 };
 

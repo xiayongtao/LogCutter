@@ -2,7 +2,7 @@
 
 MsgAnalyser::MsgAnalyser()
 {
-
+    codec = QTextCodec::codecForName("GB18030");
 }
 
 MsgAnalyser::~MsgAnalyser()

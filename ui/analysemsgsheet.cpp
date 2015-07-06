@@ -4,6 +4,10 @@
 #include <QMessageBox>
 #include <QDir>
 #include <QFileDialog>
+#include <QFile>
+#include <QTextCodec>
+
+#include <QDebug>
 
 AnalyseMsgSheet::AnalyseMsgSheet(QWidget *parent)
     :QTableWidget(parent)
@@ -26,7 +30,7 @@ void AnalyseMsgSheet::clean()
 }
 
 
-int AnalyseMsgSheet::exportToExcel(QString &fileName)
+int AnalyseMsgSheet::exportToExcel(QString fileName)
 {
     if (fileName.isEmpty())
     {
@@ -46,10 +50,13 @@ int AnalyseMsgSheet::exportToExcel(QString &fileName)
     QAxObject *range = NULL;
     for(int row = 0; row < this->rowCount(); row ++)
     {
-        for(int col = 0; col < this->colorCount(); col++)
+        for(int col = 0; col < this->columnCount(); col++)
         {
             range = worksheet->querySubObject("Cells(int,int)",row+1,col+1);
-            range->setProperty("Value", this->itemAt(row,col)->text());
+            if(range != NULL)
+            {
+                range->setProperty("Value", this->item(row,col) ? this->item(row,col)->text():"");
+            }
         }
     }
 
@@ -59,5 +66,37 @@ int AnalyseMsgSheet::exportToExcel(QString &fileName)
     worksheet->clear();//释放所有工作表
     excel->dynamicCall("Quit()");
     delete excel;//释放excel
+    return 0;
+}
+
+
+int AnalyseMsgSheet::exportToCsv(QString fileName)
+{
+    if(fileName.isEmpty())
+        return -1;
+
+    QFile *csvFile = new QFile(fileName);
+    if(!csvFile->open(QFile::WriteOnly))
+    {
+        return -2;
+    }
+    csvFile->resize(0);
+    QTextStream csvFileStream(csvFile);
+
+    QString lineStr;
+
+    for(int row = 0; row < this->rowCount(); row ++)
+    {
+        lineStr.clear();
+        for(int col = 0; col < this->columnCount(); col++)
+        {
+            lineStr.append(QString(this->item(row,col) ? this->item(row,col)->text():"") + QString(","));
+        }
+        lineStr.append("\n");
+        csvFileStream << lineStr;
+    }
+    csvFile->close();
+    delete csvFile;
+    return 0;
 }
 

@@ -19,7 +19,6 @@ public:
 
     QList<MsgItem> analyseMsg(MsgItem msg, MsgItem *remanentMsg);
 
-
 private:
     QList<QString> dateReg;
     QList<QString> timeReg;
