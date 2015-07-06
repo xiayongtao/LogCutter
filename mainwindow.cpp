@@ -33,6 +33,7 @@ void MainWindow::openFile()
 
     Analyser loganalyser;
     loganalyser.analyserFile(filepath, ui->analyseSheet);
+    ui->analyseSheet->exportToExcel(QString("G:\workspace\wyw\Git\build-LogCutter-Desktop_Qt_5_4_0_MinGW_32bit-Debug\test.xlsx"));
 
     /*
     QFile   logFile(filepath);

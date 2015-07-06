@@ -13,6 +13,8 @@ public:
 
     void clean();
 
+    int exportToExcel(QString &fileName);
+
 
 
 
