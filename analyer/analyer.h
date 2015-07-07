@@ -37,7 +37,7 @@ public:
     MsgItem(int msgType, QString msgData);
     ~MsgItem();
 
-    typedef enum
+    enum
     {
         MSG_NONE,              //没有报文
         MSG_LOG,               //日志报文
@@ -46,8 +46,15 @@ public:
         MSG_METER07,           //07表报文
         MSG_METER97,           //97表报文
         MSG_UNKNOW,            //未知报文
+    };                         //报文类型
 
-    } MsgType;                 //报文类型
+    enum
+    {
+        FORMAT_COMMON = 0,     //通常类型
+        FORMAT_STRING,         //文本类型
+    };
+
+
 
     int         msgType;   //信息类型
     QString     msgData;   //信息内容
@@ -56,6 +63,7 @@ public:
     QByteArray toByteArray(int base = 16);
     void setData(QString msgData, bool isText = true);
 
+    static int getFormat(int msgType);
 
 };
 

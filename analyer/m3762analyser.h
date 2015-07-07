@@ -13,6 +13,7 @@ public:
 
     static int checkMsg(QString msgData);
     static QList<MsgItem> getAllarn();
+    static int getFormat(int msgType);
 
 
     const static MsgItem LENGTH_NODE;       //376.2报文长度信息节点

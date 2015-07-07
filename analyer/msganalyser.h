@@ -21,6 +21,7 @@ public:
 
     //获取所有的解析信息节点
     static QList<MsgItem> getAllarn();
+    static int getFormat(int msgType);
 
     //解析一条报文
     virtual QList<MsgItem> analyseMsg(MsgItem msg, MsgItem *remanentMsg);

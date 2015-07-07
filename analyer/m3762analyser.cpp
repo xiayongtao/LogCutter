@@ -167,3 +167,24 @@ QList<MsgItem> M3762Analyser::getAllarn()
     arnList.append(METER_NODE);
     return arnList;
 }
+
+int M3762Analyser::getFormat(int msgType)
+{
+    switch(msgType)
+    {
+    case M3762_ANALYSER_NODE_START+1:
+        return MsgItem::FORMAT_COMMON;
+
+    case M3762_ANALYSER_NODE_START+2:
+    case M3762_ANALYSER_NODE_START+3:
+    case M3762_ANALYSER_NODE_START+4:
+    case M3762_ANALYSER_NODE_START+5:
+    case M3762_ANALYSER_NODE_START+6:
+    case M3762_ANALYSER_NODE_START+7:
+    case M3762_ANALYSER_NODE_START+8:
+        return MsgItem::FORMAT_STRING;
+    default:
+        return -1;
+    }
+}
+

@@ -75,3 +75,15 @@ bool MsgAnalyser::findDatafromList(QList<MsgItem> arnList, MsgItem *arNode)
     return false;
 }
 
+int MsgAnalyser::getFormat(int msgType)
+{
+    switch(msgType)
+    {
+    case MSG_ANALYSER_NODE_START:
+        return MsgItem::FORMAT_STRING;
+
+    default:
+        return -1;
+    }
+}
+

@@ -1,9 +1,10 @@
+#include <QFile>
+
 #include "analyer.h"
 #include "msganalyser.h"
 #include "mloganalyser.h"
 #include "m3762analyser.h"
-#include "QFile"
-
+#include "ui/amgsheetcell.h"
 
 Analyser::Analyser()
 {
@@ -165,7 +166,7 @@ int Analyser::analyserFile(QString filePath, AnalyseMsgSheet *analyseRet)
                 msgAnaRetTitleItem = msgAnaRetTitle.at(curCol);
                 if(msgAnaRetItem.msgType == msgAnaRetTitleItem.msgType)
                 {
-                    analyseRet->setItem(curRow, curCol, new QTableWidgetItem(msgAnaRetItem.msgData));
+                    analyseRet->setItem(curRow, curCol, new AmgSheetCell(msgAnaRetItem));
                     break;
                 }
             }
@@ -181,8 +182,8 @@ int Analyser::analyserFile(QString filePath, AnalyseMsgSheet *analyseRet)
                 }
                 msgAnaRetTitle.append(msgAnaRetTitleItem);
                 analyseRet->insertColumn(curCol);
-                analyseRet->setItem(0, curCol, new QTableWidgetItem(msgAnaRetTitleItem.msgData));
-                analyseRet->setItem(curRow, curCol, new QTableWidgetItem(msgAnaRetItem.msgData));
+                analyseRet->setItem(0, curCol, new AmgSheetCell(msgAnaRetTitleItem));
+                analyseRet->setItem(curRow, curCol, new AmgSheetCell(msgAnaRetItem));
             }
         }
     }
@@ -236,5 +237,22 @@ QByteArray MsgItem::toByteArray(int base)
     }
     return bytearray;
 }
+
+int MsgItem::getFormat(int msgType)
+{
+    if(msgType < MLOG_ANALYSER_NODE_START)
+    {
+        return MsgAnalyser::getFormat(msgType);
+    }
+    else if(msgType < M3762_ANALYSER_NODE_START)
+    {
+        return MlogAnalyser::getFormat(msgType);
+    }
+    else
+    {
+        return M3762Analyser::getFormat(msgType);
+    }
+}
+
 
 

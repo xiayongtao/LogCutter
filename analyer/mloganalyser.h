@@ -12,6 +12,7 @@ public:
     ~MlogAnalyser();
 
     static QList<MsgItem> getAllarn();
+    static int getFormat(int msgType);
 
     const static MsgItem DATE_NODE;         //日期信息节点
     const static MsgItem TIME_NODE;         //时间信息节点

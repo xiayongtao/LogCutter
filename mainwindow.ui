@@ -25,7 +25,6 @@
      <widget class="AnalyseMsgSheet" name="analyseSheet"/>
     </item>
    </layout>
-   <zorder></zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -39,8 +38,8 @@
    <widget class="QMenu" name="menuFile">
     <property name="geometry">
      <rect>
-      <x>286</x>
-      <y>267</y>
+      <x>421</x>
+      <y>198</y>
       <width>120</width>
       <height>178</height>
      </rect>
@@ -54,9 +53,16 @@
     <property name="title">
      <string>文件</string>
     </property>
+    <widget class="QMenu" name="menu">
+     <property name="title">
+      <string>导出</string>
+     </property>
+     <addaction name="actionToExcel"/>
+     <addaction name="actionToCsv"/>
+    </widget>
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
-    <addaction name="actionSaveAs"/>
+    <addaction name="menu"/>
     <addaction name="separator"/>
     <addaction name="actionClose"/>
     <addaction name="actionCloseAll"/>
@@ -185,11 +191,6 @@
     <string>保存</string>
    </property>
   </action>
-  <action name="actionSaveAs">
-   <property name="text">
-    <string>保存为</string>
-   </property>
-  </action>
   <action name="actionClose">
    <property name="text">
     <string>关闭</string>
@@ -258,6 +259,16 @@
   <action name="actionAbout">
    <property name="text">
     <string>关于</string>
+   </property>
+  </action>
+  <action name="actionToExcel">
+   <property name="text">
+    <string>导出到Excel</string>
+   </property>
+  </action>
+  <action name="actionToCsv">
+   <property name="text">
+    <string>导出到CSV</string>
    </property>
   </action>
  </widget>

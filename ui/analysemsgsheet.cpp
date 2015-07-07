@@ -1,25 +1,38 @@
-#include "analysemsgsheet.h"
-
 #include <QAxObject>
-#include <QMessageBox>
-#include <QDir>
 #include <QFileDialog>
 #include <QFile>
-#include <QTextCodec>
+#include <QTextStream>
 
-#include <QDebug>
+#include "analysemsgsheet.h"
+#include "amgsheetcell.h"
 
 AnalyseMsgSheet::AnalyseMsgSheet(QWidget *parent)
     :QTableWidget(parent)
 {
-    setSelectionMode(ContiguousSelection);
-
-    //exportToExcel();
+    setItemPrototype(new AmgSheetCell);
+    initUi();
 }
 
 AnalyseMsgSheet::~AnalyseMsgSheet()
 {
+    delete progressExport;
+}
 
+
+void AnalyseMsgSheet::initUi()
+{
+    //设置表格显示效果
+    setSelectionMode(ContiguousSelection);
+
+    //设置导出进度条显示效果
+    progressExport = new QProgressDialog(this);
+    progressExport->setWindowModality(Qt::WindowModal);
+    progressExport->setMinimumDuration(5);
+    progressExport->setWindowTitle(tr("请稍候"));
+    progressExport->setLabelText(tr("正在导出......      "));
+    progressExport->setCancelButtonText(QString("取消"));
+    progressExport->resize(200,100);
+    progressExport->setRange(0,100);
 }
 
 
@@ -39,6 +52,10 @@ int AnalyseMsgSheet::exportToExcel(QString fileName)
 
     QAxObject *excel = new QAxObject("Excel.Application");
 
+    if(excel == NULL)
+    {
+        return -2;
+    }
     excel->dynamicCall("SetVisible(bool)", true);
     excel->setProperty("Visible", false);
 
@@ -48,6 +65,20 @@ int AnalyseMsgSheet::exportToExcel(QString fileName)
     QAxObject *worksheet = workbook->querySubObject("Worksheets(int)", 1);
 
     QAxObject *range = NULL;
+    AmgSheetCell *cell;
+
+    //设置单元格格式
+    for(int col = 0; col < this->columnCount(); col++)
+    {
+        range = worksheet->querySubObject("Columns(int)",col+1);
+        range->setProperty("ColumnWidth",15);
+        cell = (AmgSheetCell*)item(0,col);
+        if(cell != NULL && MsgItem::getFormat(cell->getCellType()) == MsgItem::FORMAT_STRING)
+        {
+            range->setProperty("NumberFormat","@");
+        }
+    }
+
     for(int row = 0; row < this->rowCount(); row ++)
     {
         for(int col = 0; col < this->columnCount(); col++)
@@ -55,13 +86,21 @@ int AnalyseMsgSheet::exportToExcel(QString fileName)
             range = worksheet->querySubObject("Cells(int,int)",row+1,col+1);
             if(range != NULL)
             {
-                range->setProperty("Value", this->item(row,col) ? this->item(row,col)->text():"");
+                cell = (AmgSheetCell*)item(row,col);
+                if(cell != NULL)
+                {
+                    range->setProperty("Value", cell->text());
+                }
+                else
+                {
+                    range->setProperty("Value", "");
+                }
             }
         }
+        progressExport->setValue(((row+1)*100)/this->rowCount());
     }
 
     workbook->dynamicCall("SaveAs(const QString&)", QDir::toNativeSeparators(fileName));
-    QMessageBox::information(this, tr("OK"), tr("保存成功！"));
     workbook->dynamicCall("Close()");
     worksheet->clear();//释放所有工作表
     excel->dynamicCall("Quit()");
@@ -94,6 +133,7 @@ int AnalyseMsgSheet::exportToCsv(QString fileName)
         }
         lineStr.append("\n");
         csvFileStream << lineStr;
+        progressExport->setValue(((row+1)*100)/this->rowCount());
     }
     csvFile->close();
     delete csvFile;

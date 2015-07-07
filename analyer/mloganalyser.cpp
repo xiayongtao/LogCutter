@@ -41,7 +41,7 @@ QList<MsgItem> MlogAnalyser::analyseMsg(MsgItem msg, MsgItem *remanentMsg)
     }
 
     int         i;
-    int         pos;
+    int         pos = 0;
     QRegExp     regExp;
 
     //在报文中查找日期
@@ -137,4 +137,18 @@ QList<MsgItem> MlogAnalyser::getAllarn()
     arnList.append(TIME_NODE);
     arnList.append(DIRECTION_NODE);
     return arnList;
+}
+
+int MlogAnalyser::getFormat(int msgType)
+{
+    switch(msgType)
+    {
+    case MLOG_ANALYSER_NODE_START:
+    case MLOG_ANALYSER_NODE_START+1:
+    case MLOG_ANALYSER_NODE_START+2:
+        return MsgItem::FORMAT_COMMON;
+
+    default:
+        return -1;
+    }
 }

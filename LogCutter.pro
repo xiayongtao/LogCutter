@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     analyer/msganalyser.cpp \
     analyer/mloganalyser.cpp \
     analyer/m3762analyser.cpp \
-    ui/analysemsgsheet.cpp
+    ui/analysemsgsheet.cpp \
+    ui/amgsheetcell.cpp
 
 HEADERS  += mainwindow.h \
     analyer/analyer.h \
@@ -27,6 +28,7 @@ HEADERS  += mainwindow.h \
     analyer/msganalyser.h \
     analyer/mloganalyser.h \
     analyer/m3762analyser.h \
-    ui/analysemsgsheet.h
+    ui/analysemsgsheet.h \
+    ui/amgsheetcell.h
 
 FORMS    += mainwindow.ui
