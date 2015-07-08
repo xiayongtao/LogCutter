@@ -132,11 +132,10 @@ int Analyser::analyserFile(QString filePath, AnalyseMsgSheet *analyseRet)
 
     QList<MsgItem>      allNode;         //所有可以解析的节点
     QList<MsgItem>      msgAnaRet;       //解析结果
-    QList<MsgItem>      msgAnaRetTitle;  //记录的解析节点类型
 
     MsgItem             allNodeItem;
     MsgItem             msgAnaRetItem;
-    MsgItem             msgAnaRetTitleItem;
+    AmgSheetCell        *sheetCell;
 
     int                 curCol;
     int                 curRow;
@@ -147,42 +146,51 @@ int Analyser::analyserFile(QString filePath, AnalyseMsgSheet *analyseRet)
         return -1;
     }
 
-    analyseRet->clean();
-    analyseRet->setRowCount(1);
+    //获取所有可以解析的节点
     getAllNode(&allNode);
 
     while(logFile.readLine(buf, sizeof(buf)) != -1)
     {
+        //解析报文
         msgAnaRet = analyserMsg(MsgItem(MsgItem::MSG_LOG,QString(buf)));
 
         curRow = analyseRet->rowCount();
+        if(curRow == 0)
+        {
+            //表格为空,添加标题行
+            analyseRet->insertRow(curRow++);
+        }
         analyseRet->insertRow(curRow);
 
+        //遍历所有的解析结果，将报文解析结果添加到表格中
         foreach(msgAnaRetItem, msgAnaRet)
         {
-            //遍历所有的记录的解析节点类型
-            for(curCol = 0; curCol < msgAnaRetTitle.length(); curCol++)
+            //遍历标题行，寻找相同的节点类型
+            for(curCol = 0; curCol < analyseRet->columnCount(); curCol++)
             {
-                msgAnaRetTitleItem = msgAnaRetTitle.at(curCol);
-                if(msgAnaRetItem.msgType == msgAnaRetTitleItem.msgType)
+                sheetCell = (AmgSheetCell*)analyseRet->item(0,curCol);
+                if(sheetCell != NULL)
                 {
-                    analyseRet->setItem(curRow, curCol, new AmgSheetCell(msgAnaRetItem));
-                    break;
+                    if(msgAnaRetItem.msgType == sheetCell->getCellType())
+                    {
+                        //找到与标题行相同类型的节点，将解析结果添加到表格中
+                        analyseRet->setItem(curRow, curCol, new AmgSheetCell(msgAnaRetItem));
+                        break;
+                    }
                 }
             }
-            if(curCol >= msgAnaRetTitle.length())
+            //没有找到与标题行相同类型的节点
+            if(curCol >= analyseRet->columnCount())
             {
-                //没有在记录中找到,添加一列
-                msgAnaRetTitleItem.msgType = msgAnaRetItem.msgType;
-                msgAnaRetTitleItem.msgData = QString("");
+                //在标题栏添加一列
                 foreach(allNodeItem, allNode)
                 {
                     if(allNodeItem.msgType == msgAnaRetItem.msgType)
-                        msgAnaRetTitleItem = allNodeItem;
+                        break;
                 }
-                msgAnaRetTitle.append(msgAnaRetTitleItem);
                 analyseRet->insertColumn(curCol);
-                analyseRet->setItem(0, curCol, new AmgSheetCell(msgAnaRetTitleItem));
+                analyseRet->setItem(0, curCol, new AmgSheetCell(allNodeItem));
+                //将解析结果添加到表格中
                 analyseRet->setItem(curRow, curCol, new AmgSheetCell(msgAnaRetItem));
             }
         }

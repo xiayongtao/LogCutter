@@ -38,8 +38,8 @@
    <widget class="QMenu" name="menuFile">
     <property name="geometry">
      <rect>
-      <x>421</x>
-      <y>198</y>
+      <x>338</x>
+      <y>173</y>
       <width>120</width>
       <height>178</height>
      </rect>
@@ -61,12 +61,12 @@
      <addaction name="actionToCsv"/>
     </widget>
     <addaction name="actionOpen"/>
-    <addaction name="actionSave"/>
+    <addaction name="actionAppendOpen"/>
     <addaction name="menu"/>
     <addaction name="separator"/>
     <addaction name="actionClose"/>
-    <addaction name="actionCloseAll"/>
     <addaction name="separator"/>
+    <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="geometry">
@@ -185,20 +185,24 @@
    <property name="text">
     <string>打开</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
   </action>
-  <action name="actionSave">
+  <action name="actionAppendOpen">
    <property name="text">
-    <string>保存</string>
+    <string>追加打开</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
    </property>
   </action>
   <action name="actionClose">
    <property name="text">
     <string>关闭</string>
    </property>
-  </action>
-  <action name="actionCloseAll">
-   <property name="text">
-    <string>关闭全部</string>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
    </property>
   </action>
   <action name="actionCopy">
@@ -269,6 +273,11 @@
   <action name="actionToCsv">
    <property name="text">
     <string>导出到CSV</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>退出</string>
    </property>
   </action>
  </widget>

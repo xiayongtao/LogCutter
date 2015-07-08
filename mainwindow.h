@@ -18,12 +18,15 @@ public:
 
 private slots:
     void openFile();
+    void appendOpenFile();
     void saveAsExcel();
     void saveAsCsv();
+    void closeFile();
 
 private:
     Ui::MainWindow *ui;
     void connectUi();
+    void updateMenu();
 
 };
 

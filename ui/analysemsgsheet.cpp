@@ -78,6 +78,7 @@ int AnalyseMsgSheet::exportToExcel(QString fileName)
             range->setProperty("NumberFormat","@");
         }
     }
+    workbook->dynamicCall("SaveAs(const QString&)", QDir::toNativeSeparators(fileName));
 
     for(int row = 0; row < this->rowCount(); row ++)
     {
@@ -98,9 +99,10 @@ int AnalyseMsgSheet::exportToExcel(QString fileName)
             }
         }
         progressExport->setValue(((row+1)*100)/this->rowCount());
+        if((row+1)%500 == 0)
+            workbook->dynamicCall("Save()");
     }
-
-    workbook->dynamicCall("SaveAs(const QString&)", QDir::toNativeSeparators(fileName));
+    workbook->dynamicCall("Save()");
     workbook->dynamicCall("Close()");
     worksheet->clear();//释放所有工作表
     excel->dynamicCall("Quit()");
@@ -123,13 +125,24 @@ int AnalyseMsgSheet::exportToCsv(QString fileName)
     QTextStream csvFileStream(csvFile);
 
     QString lineStr;
+    AmgSheetCell *cell;
 
     for(int row = 0; row < this->rowCount(); row ++)
     {
         lineStr.clear();
         for(int col = 0; col < this->columnCount(); col++)
         {
-            lineStr.append(QString(this->item(row,col) ? this->item(row,col)->text():"") + QString(","));
+            cell = (AmgSheetCell*) this->item(row,col);
+            if(cell != NULL)
+            {
+                if(MsgItem::getFormat(cell->getCellType()) == MsgItem::FORMAT_STRING)
+                    lineStr.append("_" + cell->text());
+                else
+                    lineStr.append(cell->text());
+            }
+            else
+                lineStr.append("");
+            lineStr.append(",");
         }
         lineStr.append("\n");
         csvFileStream << lineStr;
